@@ -74,8 +74,9 @@ namespace paxpat {
             fclose(fd);
         }
         
-        void elementHandler(string elementName, function<void(Expat& a)> call) {
+        Expat& elementHandler(string elementName, function<void(Expat& a)> call) {
             elementCallbacks[elementName] = call;
+            return *this;
         }
         
         string element() {

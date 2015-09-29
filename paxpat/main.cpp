@@ -11,14 +11,12 @@ int main(int argc, const char * argv[]) {
     
     e.elementHandler("author", [](Expat& a) -> void {
         cout << "author name: " << a.text() << endl;
-    });
-    e.elementHandler("title", [](Expat& a) -> void {
+        cout << "column number: " << a.column() << endl;
+    }).elementHandler("title", [](Expat& a) -> void {
         cout << "title name: " << a.text() << endl;
-    });
-    e.elementHandler("genre", [](Expat& a) -> void {
+    }).elementHandler("genre", [](Expat& a) -> void {
         cout << "genre name: " << a.text() << endl;
-    });
-    e.parseFile("books.xml");
+    }).parseFile("books.xml");
     
     
     return 0;
