@@ -7,6 +7,7 @@
 using namespace std;
 
 namespace paxpat {
+    
     class Expat {
     public:
         
@@ -21,6 +22,9 @@ namespace paxpat {
             
             // callbacks for the elements handlers
             XML_SetElementHandler(parser, &Expat::startElement, &Expat::endElement);
+            
+            XML_SetCharacterDataHandler(parser, &Expat::characterDataHandler);
+
         }
         
         ~Expat() {
@@ -74,22 +78,52 @@ namespace paxpat {
             elementCallbacks[elementName] = call;
         }
         
+        string element() {
+            return currentElement_;
+        }
+        
+        map<string, string> attributes() {
+            return currentAttributes_;
+        }
+        
+        string text() {
+            return currentText_;
+        }
+        
     private:
         
         XML_Parser parser;
         
         static void startElement(void *data, const char *name, const char **atts) {
+    
+            Expat* e = static_cast<Expat *>(data);
             
-            if (static_cast<Expat *>(data)->elementCallbacks.find(name) !=
-                static_cast<Expat *>(data)->elementCallbacks.end()) {
-                static_cast<Expat *>(data)->elementCallbacks.find(name)->second(*static_cast<Expat *>(data));
+            if (e->elementCallbacks.find(name) != e->elementCallbacks.end()) {
+                
+                e->currentElement_ = name;
+                
+                for (int i = 0; atts[i]; i += 2) {
+                    e->currentAttributes_[atts[i]] = atts[i + 1];
+                }
             }
         }
         
         static void endElement(void *data, const char *name) {
-            
+            Expat* e = static_cast<Expat *>(data);
+            if (e->elementCallbacks.find(name) != e->elementCallbacks.end()) {
+                e->elementCallbacks.find(e->currentElement_)->second(*static_cast<Expat *>(data));
+            }
+        }
+        
+        static void characterDataHandler(void *data, char const *d, int len) {
+            Expat* e = static_cast<Expat *>(data);
+            e->currentText_ = std::string(d, len);
         }
         
         map<string, function<void(Expat& a)>> elementCallbacks;
+        
+        map<string, string> currentAttributes_;
+        string currentElement_;
+        string currentText_;
     };
 }
