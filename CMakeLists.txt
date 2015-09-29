@@ -7,10 +7,10 @@ include_directories(${EXPAT_INCLUDE_DIRS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 set(SOURCE_FILES
-    src/Expat.hpp
+    paxpat/Expat.hpp
     CMakeLists.txt
     LICENSE
-    main.cpp
+    paxpat/main.cpp
     README.md)
 
 add_executable(paxpat ${SOURCE_FILES})
